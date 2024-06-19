@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de TDS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-image: url('https://th.bing.com/th/id/OIP.SNlyI_tvrHPXkOb_du628gHaFZ?rs=1&pid=ImgDetMain');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .result, .validation {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .validation {
+            color: red;
+        }
+        .potability {
+            margin-top: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calculadora de TDS</h1>
+
+    <div class="form-group">
+        <label for="dureza_calcio">Dureza de Cálcio (mg/L):</label>
+        <input type="number" id="dureza_calcio" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="dureza_magnesio">Dureza de Magnésio (mg/L):</label>
+        <input type="number" id="dureza_magnesio" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="dureza_total">Dureza Total (mg/L):</label>
+        <input type="number" id="dureza_total" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="sodio">Sódio (mg/L):</label>
+        <input type="number" id="sodio" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="potassio">Potássio (mg/L):</label>
+        <input type="number" id="potassio" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="alcalinidade_total">Alcalinidade Total (mg/L):</label>
+        <input type="number" id="alcalinidade_total" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="co2">CO₂ Livre (mg/L):</label>
+        <input type="number" id="co2" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="sulfato">Sulfato (mg/L):</label>
+        <input type="number" id="sulfato" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="cloreto">Cloreto (mg/L):</label>
+        <input type="number" id="cloreto" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="amonia">Amônia (mg/L):</label>
+        <input type="number" id="amonia" step="0.01">
+    </div>
+
+    <div class="form-group">
+        <label for="silica">Sílica (mg/L):</label>
+        <input type="number" id="silica" step="0.01">
+    </div>
+
+    <button onclick="calcularTDS()">Calcular TDS</button>
+
+    <div id="resultado" class="result"></div>
+    <div id="potabilidade" class="potability"></div>
+    <div id="verificacao"></div>
+</div>
+
+<script>
+    function calcularTDS() {
+        // Obtenha os valores das entradas
+        let dureza_calcio = parseFloat(document.getElementById('dureza_calcio').value) || 0;
+        let dureza_magnesio = parseFloat(document.getElementById('dureza_magnesio').value) || 0;
+        let dureza_total = parseFloat(document.getElementById('dureza_total').value) || 0;
+        let sodio = parseFloat(document.getElementById('sodio').value) || 0;
+        let potassio = parseFloat(document.getElementById('potassio').value) || 0;
+        let alcalinidade_total = parseFloat(document.getElementById('alcalinidade_total').value) || 0;
+        let co2 = parseFloat(document.getElementById('co2').value) || 0;
+        let sulfato = parseFloat(document.getElementById('sulfato').value) || 0;
+        let cloreto = parseFloat(document.getElementById('cloreto').value) || 0;
+        let amonia = parseFloat(document.getElementById('amonia').value) || 0;
+        let silica = parseFloat(document.getElementById('silica').value) || 0;
+
+        // Calcular o TDS (soma das concentrações dos íons em mg/L)
+        let tds_calculado = dureza_calcio + dureza_magnesio + dureza_total + sodio + potassio + alcalinidade_total + co2 + sulfato + cloreto + amonia + silica;
+
+        // Atualizar a interface
+        document.getElementById('resultado').innerText = 'TDS Calculado: ' + tds_calculado.toFixed(2) + ' mg/L';
+
+        // Verificar potabilidade
+        let potabilidade = tds_calculado > 500 ? 'Fora dos Padrões de Potabilidade' : 'Água Própria para o Consumo';
+        document.getElementById('potabilidade').innerText = potabilidade;
+
+        // Mostrar campo de verificação do TDS
+        document.getElementById('verificacao').innerHTML = `
+            <div class="form-group">
+                <label for="tds">TDS Real (mg/L):</label>
+                <input type="number" id="tds" step="0.01">
+            </div>
+            <button onclick="validarTDS(${tds_calculado})">Validar TDS</button>
+            <div id="mensagem" class="validation"></div>
+        `;
+    }
+
+    function validarTDS(tds_calculado) {
+        let tds_real = parseFloat(document.getElementById('tds').value);
+        if (!isNaN(tds_real)) {
+            let tdsMin = tds_calculado * 0.9;
+            let tdsMax = tds_calculado * 1.1;
+            if (tds_real < tdsMin || tds_real > tdsMax) {
+                document.getElementById('mensagem').innerText = 'ERRO, REFAÇA A ANÁLISE OU VERIFIQUE SE ERROU NA DIGITAÇÃO';
+            } else {
+                document.getElementById('mensagem').innerText = 'TDS validado corretamente.';
+            }
+        } else {
+            document.getElementById('mensagem').innerText = 'Por favor, insira um valor válido para o TDS.';
+        }
+    }
+</script>
+
+</body>
+</html>
